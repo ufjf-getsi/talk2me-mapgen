@@ -8,7 +8,7 @@
 <body>
     <h1>DCC138 Exemplo01</h1>
     <canvas></canvas>
-    <p>por Eduardo Vieira Marques Pereira do Valle (2020) </p>
+    <p>por Eduardo Vieira Marques Pereira do Valle (2020), Gerador em vermelho, planetas vazios em branco e possíveis consumidores em azul(distancia de pelo menos 4)</p>
     <script>
         let canvas = document.querySelector("canvas");
         let ctx = canvas.getContext("2d");
@@ -16,9 +16,29 @@
         canvas.height = 320;
         let x = 100;
         let y = 150;
+        let tamanhoMatriz = 25;
+        let planetas = [25];
+        for(i=0;i<tamanhoMatriz;i++)
+        {
+            planetas[i] = 9;
+        }
+        let auxGerador = Math.floor(Math.random() * 25);
+        planetas[auxGerador] = 0;
+        for(i=0;i<tamanhoMatriz;i++)
+        {
+            if(auxGerador != i)
+            {
+                var auxGcoluna = auxGerador%5;
+                var auxGlinha = Math.floor(auxGerador/5);
+                var auxVcoluna = i%5;
+                var auxVlinha = Math.floor(i/5);
+                planetas[i] = Math.abs(auxGcoluna - auxVcoluna)+Math.abs(auxGlinha - auxVlinha);
+            }
+        }
         let t0;
         let dt;
-        requestAnimationFrame(desenha);
+        desenhaPlanetas();
+        //requestAnimationFrame(desenha);
         
         function desenha(t){
             t0 = t0 ?? t;
@@ -39,6 +59,36 @@
             t0 = t;
         }
 
+        function desenhaPlanetas()
+        {
+            //Desenha Fundo
+            ctx.fillStyle = "black";
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            //Desenha Matrix de Planetas
+            for(i=0;i<tamanhoMatriz;i++)
+            {
+                //Gerador pinta de vermelho
+                if(planetas[i] == 0)
+                {
+                    ctx.fillStyle = "red";
+                }
+                else
+                {
+                    //Vazio Branco, possível consumidor azul
+                    if(planetas[i] < 4)
+                    {
+                        ctx.fillStyle = "white";
+                    }
+                    else
+                    {
+                        ctx.fillStyle = "blue";
+                    }
+                }
+                var auxX = (i%5)*40;
+                var auxY = (Math.floor(i/5))*40;
+                ctx.fillRect(auxX,auxY,20,20);
+            }
+        }
     </script>
 </body>
 </html>
