@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DCC138 Exemplo01</title>
 </head>
+
 <body>
     <h1>DCC138 Exemplo01</h1>
     <canvas></canvas>
-    <p>por Eduardo Vieira Marques Pereira do Valle (2020), Gerador em vermelho, planetas vazios em branco e possíveis consumidores em azul(distancia de pelo menos 4)</p>
+    <p>por Eduardo Vieira Marques Pereira do Valle (2020), Gerador em vermelho, planetas vazios em branco e possíveis
+        consumidores em azul(distancia de pelo menos 4)</p>
     <script>
         let canvas = document.querySelector("canvas");
         let ctx = canvas.getContext("2d");
@@ -16,79 +19,97 @@
         canvas.height = 320;
         let x = 100;
         let y = 150;
-        let tamanhoMatriz = 25;
-        let planetas = [25];
-        for(i=0;i<tamanhoMatriz;i++)
-        {
-            planetas[i] = 9;
-        }
-        let auxGerador = Math.floor(Math.random() * 25);
-        planetas[auxGerador] = 0;
-        for(i=0;i<tamanhoMatriz;i++)
-        {
-            if(auxGerador != i)
-            {
-                var auxGcoluna = auxGerador%5;
-                var auxGlinha = Math.floor(auxGerador/5);
-                var auxVcoluna = i%5;
-                var auxVlinha = Math.floor(i/5);
-                planetas[i] = Math.abs(auxGcoluna - auxVcoluna)+Math.abs(auxGlinha - auxVlinha);
+        const SIDE = 5;
+        const SIZE = 30;
+        let planets = Array(SIDE)
+            .fill()
+            .map(() => Array(SIDE).fill(undefined));
+
+        for (let r = 0; r < planets.length; r++) {
+            for (let c = 0; c < planets[0].length; c++) {
+                const planet = planets[r][c] = {
+                    r: r,
+                    c: c,
+                    x: c * SIZE,
+                    y: r * SIZE,
+                    type: Infinity
+                };
             }
         }
+        let gr = Math.floor(Math.random() * SIDE);
+        let gc = Math.floor(Math.random() * SIDE);
+        planets[gr][gc].type = 0;
+        for (let r = 0; r < planets.length; r++) {
+            for (let c = 0; c < planets[0].length; c++) {
+                let planet = planets[r][c];
+                const d = Math.abs(gr - planet.r) + Math.abs(gc - planet.c);
+                planet.type = Math.min(planet.type, d);
+            }
+        }
+
+
         let t0;
         let dt;
-        desenhaPlanetas();
-        //requestAnimationFrame(desenha);
+        requestAnimationFrame(desenha);
         
-        function desenha(t){
+        function desenha(t) {
             t0 = t0 ?? t;
-            dt = (t - t0)/1000;
+            dt = (t - t0) / 1000;
             //Desenha Fundo
             ctx.fillStyle = "black";
-            ctx.fillRect(0,0,canvas.width,canvas.height);
-
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            //Desloca origem
+            ctx.save();
+            ctx.translate(canvas.width/3, canvas.height/3);
+            
             //Atualiza estados
-            x = x + 10*dt;
-            y = 100 + 1500*Math.cos(t/200)*dt;
-
+            x = x + 10 * dt;
+            y = 100 + 1500 * Math.cos(t / 200) * dt;
+            
+            desenhaPlanetas();
             //Desenha elementos
             ctx.fillStyle = "white";
-            ctx.fillRect(x,y,20,20);
-
+            ctx.fillRect(x, y, 20, 20);
+            
+            ctx.restore();
             requestAnimationFrame(desenha);
             t0 = t;
         }
 
-        function desenhaPlanetas()
-        {
+        function desenhaPlanetas() {
             //Desenha Fundo
             ctx.fillStyle = "black";
-            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
             //Desenha Matrix de Planetas
-            for(i=0;i<tamanhoMatriz;i++)
-            {
-                //Gerador pinta de vermelho
-                if(planetas[i] == 0)
-                {
-                    ctx.fillStyle = "red";
-                }
-                else
-                {
-                    //Vazio Branco, possível consumidor azul
-                    if(planetas[i] < 4)
-                    {
-                        ctx.fillStyle = "white";
+            for (let r = 0; r < planets.length; r++) {
+                for (let c = 0; c < planets[0].length; c++) {
+                    const planet = planets[r][c];
+                    if (planet.type == 0) {
+                        ctx.fillStyle = "red";
                     }
-                    else
-                    {
-                        ctx.fillStyle = "blue";
+                    else {
+                        //Vazio Branco, possível consumidor azul
+                        if (planet.type < 4) {
+                            ctx.fillStyle = "white";
+                        }
+                        else {
+                            ctx.fillStyle = "blue";
+                        }
                     }
+                    ctx.beginPath();
+                    ctx.ellipse(planet.x, planet.y, 7, 7, 0, 0, 2 * Math.PI, false);
+                    ctx.fill();
+                    ctx.strokeStyle = "grey";
+                    ctx.stroke();
+                    ctx.fillStyle = "white";
+                    ctx.fillText(planet.type, planet.x+10, planet.y+10);
                 }
-                var auxX = (i%5)*40;
-                var auxY = (Math.floor(i/5))*40;
-                ctx.fillRect(auxX,auxY,20,20);
             }
         }
     </script>
 </body>
+
 </html>
