@@ -19,6 +19,9 @@
         canvas.height = 320;
         let x = 100;
         let y = 150;
+        let vx = 0;
+        let vy = 0;
+
         const SIDE = 5;
         const SIZE = 30;
         let planets = Array(SIDE)
@@ -67,13 +70,13 @@
             );
 
             //Atualiza estados
-            x = x + 10 * dt;
-            y = 100 + 1500 * Math.cos(t / 200) * dt;
+            x = x + 25 * Math.sign(planets[gr][gc].x - x) * dt;
+            y = y + 25 * Math.sign(planets[gr][gc].y - y) * dt;
 
             desenhaPlanetas();
             //Desenha elementos
             ctx.fillStyle = "white";
-            ctx.fillRect(x, y, 20, 20);
+            ctx.fillRect(x, y, 4, 4);
 
             ctx.restore();
             requestAnimationFrame(desenha);
