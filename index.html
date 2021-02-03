@@ -37,6 +37,7 @@
                     x: c * SIZE,
                     y: r * SIZE,
                     cor: "white",
+                    consumidor: false,
                     type: Array(NumberGem).fill(Infinity),
                     verificaGerador: verificaGera
                 };
@@ -88,9 +89,41 @@
             }
         }
 
+        //função para criar consumidores a determinada distancia , definindo a cor do consumidor 
+        function criaConsumidor(indice)
+        {
+            
+            gr = Math.floor(Math.random() * SIDE);
+            gc = Math.floor(Math.random() * SIDE);
+            while (planets[gr][gc].verificaGerador() || planets[gr][gc].consumidor || planets[gr][gc].type[indice] < 4) {
+                gr = Math.floor(Math.random() * SIDE);
+                gc = Math.floor(Math.random() * SIDE);
+            }
+            switch (indice) {
+                case 0:
+                    planets[gr][gc].cor = "Crimson";
+                    break;
+                case 1:
+                    planets[gr][gc].cor = "Cyan";
+                    break;
+                case 2:
+                    planets[gr][gc].cor = "SpringGreen";
+                    break;
+            }
+            planets[gr][gc].consumidor = true;
+            
+        }
+
         criaGerador(0);
         criaGerador(1);
         criaGerador(2);
+        criaGerador(0);
+        criaGerador(1);
+        criaGerador(2);
+        
+        criaConsumidor(0);
+        criaConsumidor(1);
+        criaConsumidor(2);
         let t0;
         let dt;
         requestAnimationFrame(desenha);
