@@ -59,7 +59,7 @@ function criaConsumidor(indice)
     
     gr = Math.floor(Math.random() * SIDE);
     gc = Math.floor(Math.random() * SIDE);
-    while (maps.verifyElement(gr, gc) || maps.getElement(indice + NumberGem, gr, gc) < 4) {
+    while (maps.verifyElement(gr, gc) || maps.getElement(indice, gr, gc) < 4) {
         gr = Math.floor(Math.random() * SIDE);
         gc = Math.floor(Math.random() * SIDE);
     }
