@@ -207,15 +207,19 @@ document.addEventListener("keydown", (e) => {
             camada = 6;
             break;
         case "ArrowLeft":
+            e.preventDefault();
             xMapa = xMapa - 10;
             break;
         case "ArrowRight":
+            e.preventDefault();
             xMapa = xMapa + 10;
             break;
         case "ArrowUp":
+            e.preventDefault();
             yMapa = yMapa - 10;
             break;
         case "ArrowDown":
+            e.preventDefault();
             yMapa = yMapa + 10;
             break;
     }
