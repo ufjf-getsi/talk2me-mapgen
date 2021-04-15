@@ -137,15 +137,15 @@ function desenhaPlanetas() {
                     switch (item) {
                         case 0:
                             ctx.fillStyle = "red";
-                            ctx.fillRect(planet.x + 15, planet.y + 10*(numeroElementos-1), 4, 4);            
+                            ctx.fillRect(planet.x + 15, planet.y + 10*(numeroElementos-1)-5, 5, 5);            
                             break;
                         case 1:
                             ctx.fillStyle = "blue";
-                            ctx.fillRect(planet.x + 15, planet.y + 10*(numeroElementos-1), 4, 4);
+                            ctx.fillRect(planet.x + 15, planet.y + 10*(numeroElementos-1)-5, 5, 5);
                             break;
                         case 2:
                             ctx.fillStyle = "green";
-                            ctx.fillRect(planet.x + 15, planet.y + 10*(numeroElementos-1), 4, 4);
+                            ctx.fillRect(planet.x + 15, planet.y + 10*(numeroElementos-1)-5, 5, 5);
                             break;
                         case 3:
                             ctx.fillStyle = "red";
