@@ -1,5 +1,6 @@
 import InfluenceMaps from "./InfluenceMaps.js";
 import Planet from "./Planet.mjs";
+import Player from "./Player.js";
 
 let canvas = document.querySelector("canvas");
 let ctx = canvas.getContext("2d");
@@ -29,14 +30,13 @@ for (let r = 0; r < planets.length; r++) {
     }
 }
 
-let gr = 0;
-let gc = 0;
+let player = new Player(NumberGem, planets[0][0].x, planets[0][0].y);
 
 //função para criar geradores apenas em locais que não existam gerador, definindo a color do gerador e indices de todos os planetas com a adição desse gerador 
 function criaGerador(indice)
 {
-    gr = Math.floor(Math.random() * SIDE);
-    gc = Math.floor(Math.random() * SIDE);
+    let gr = Math.floor(Math.random() * SIDE);
+    let gc = Math.floor(Math.random() * SIDE);
     while (maps.verifyElement(indice, gr, gc) || maps.getElement(indice + NumberGem, gr, gc) < 4) {
         gr = Math.floor(Math.random() * SIDE);
         gc = Math.floor(Math.random() * SIDE);
@@ -48,14 +48,143 @@ function criaGerador(indice)
 //função para criar consumidores a determinada distancia , definindo a color do consumidor 
 function criaConsumidor(indice)
 {
-    gr = Math.floor(Math.random() * SIDE);
-    gc = Math.floor(Math.random() * SIDE);
+    let gr = Math.floor(Math.random() * SIDE);
+    let gc = Math.floor(Math.random() * SIDE);
     while (maps.verifyElement(indice, gr, gc) || maps.getElement(indice, gr, gc) < 4) {
         gr = Math.floor(Math.random() * SIDE);
         gc = Math.floor(Math.random() * SIDE);
     }
     planets[gr][gc].lista.add(indice + NumberGem);
     maps.addElement(indice + NumberGem, gr, gc);
+}
+
+//função para determinar comportamento do jogador 
+function comportamentoPlayer()
+{
+    let distanciaPlaneta = Infinity;
+    let proximoPlaneta = "";
+    if(player.seguindo == NumberGem*2) {
+        let cargaPrioritaria = NumberGem;
+        for (let index = 0; index < player.cargas.length; index++) {
+            if(player.cargas[index] > 0)
+            {
+                if(cargaPrioritaria == NumberGem)
+                {
+                    cargaPrioritaria = index;
+                    distanciaPlaneta = maps.getElement(cargaPrioritaria, player.planetX, player.planetY);
+                }
+                else
+                {
+                    if(maps.getElement(index, player.planetX, player.planetY) < distanciaPlaneta)
+                    {
+                        cargaPrioritaria = index;
+                        distanciaPlaneta = maps.getElement(cargaPrioritaria, player.planetX, player.planetY);
+                    }
+                }
+            }
+        }
+        if(cargaPrioritaria < NumberGem && distanciaPlaneta != Infinity)
+        {
+            player.seguindo = cargaPrioritaria + NumberGem; 
+        } 
+        else 
+        {
+            let mapaSeguido = 0;
+            for (let index = 1; index < NumberGem; index++) {
+                if(maps.getElement(index, player.planetX, player.planetY) < maps.getElement(mapaSeguido, player.planetX, player.planetY))
+                    {
+                        mapaSeguido = index;
+                    } 
+            }
+            player.seguindo = mapaSeguido;
+        }
+    } 
+
+    if(maps.getElement(player.seguindo, player.planetX, player.planetY) == 0)
+    {
+        //conclusão ao chegar no destino
+        player.seguindo = NumberGem*2;
+    }
+    else
+    {
+        //deslocamento
+        distanciaPlaneta = Infinity;
+        if(player.planetX - 1 >= 0)
+        {
+            distanciaPlaneta = maps.getElement(player.seguindo, player.planetX - 1, player.planetY);
+            proximoPlaneta = "Esquerda";
+        }
+        if(player.planetX + 1 < SIDE)
+        {
+            if(maps.getElement(player.seguindo, player.planetX + 1, player.planetY) < distanciaPlaneta)
+            {
+                distanciaPlaneta = maps.getElement(player.seguindo, player.planetX + 1, player.planetY);
+                proximoPlaneta = "Direita";
+            }
+        }
+        if(player.planetY - 1 >= 0)
+        {
+            if(maps.getElement(player.seguindo, player.planetX, player.planetY - 1) < distanciaPlaneta)
+            {
+                distanciaPlaneta = maps.getElement(player.seguindo, player.planetX, player.planetY - 1);
+                proximoPlaneta = "Cima";
+            }
+        }
+        if(player.planetY + 1 < SIDE)
+        {
+            if(maps.getElement(player.seguindo, player.planetX, player.planetY + 1) < distanciaPlaneta)
+            {
+                distanciaPlaneta = maps.getElement(player.seguindo, player.planetX, player.planetY + 1);
+                proximoPlaneta = "Baixo";
+            }
+        }
+    }
+    interagirPlaneta()
+    if(proximoPlaneta != "" && distanciaPlaneta != Infinity)
+    {
+        deslocarPlayer(proximoPlaneta);
+    }
+}
+
+//função para determinar comportamento do jogador 
+function interagirPlaneta()
+{
+    const planet = planets[player.planetX][player.planetY];
+    for (let item of planet.lista)
+    {
+        if (item < NumberGem) {
+            player.cargas[item] += 1;
+            maps.atualizaMapa(item, player.planetX, player.planetY);
+            planet.lista.delete(item)
+        } else {
+            if(player.cargas[item-3] > 0)
+            {
+                player.score += player.cargas[item-3];
+                player.cargas[item-3] = 0;
+                maps.atualizaMapa(item, player.planetX, player.planetY);
+                planet.lista.delete(item)
+            }
+        }
+    }
+}
+
+//função para determinar comportamento do jogador 
+function deslocarPlayer(direcao)
+{
+    switch (direcao) {
+        case "Esquerda":
+            player.planetX -= 1;
+            break;
+        case "Direita":
+            player.planetX += 1;
+            break;
+        case "Cima":
+            player.planetY -= 1;
+            break;
+        case "Baixo":
+            player.planetY += 1;
+            break;
+    }
 }
 
 criaGerador(0);
@@ -70,6 +199,7 @@ criaConsumidor(1);
 criaConsumidor(2);
 let t0;
 let dt;
+let tempoEscolha = 0;
 requestAnimationFrame(desenha);
 
 function desenha(t) {
@@ -86,20 +216,33 @@ function desenha(t) {
         (canvas.width - SIDE * SIZE) / 2,
         (canvas.height - SIDE * SIZE) / 2
     );
+    if(tempoEscolha > 5)
+    {
+        comportamentoPlayer();
+        tempoEscolha = 0;
+    }
+    else
+    {
+        tempoEscolha += dt;
+    }
 
-    //Atualiza estados
+    /*Atualiza estados
     x = x + 25 * Math.sign(planets[gr][gc].x - x) * dt;
-    y = y + 25 * Math.sign(planets[gr][gc].y - y) * dt;
+    y = y + 25 * Math.sign(planets[gr][gc].y - y) * dt;*/
 
     desenhaPlanetas();
-    //Desenha elementos
-    ctx.fillStyle = "white";
-    ctx.fillRect(x, y, 4, 4);
+    //Desenha player
+    player.x = planets[player.planetX][player.planetY].x;
+    player.y = planets[player.planetX][player.planetY].y;
+    ctx.fillStyle = "purple";
+    ctx.fillRect(player.x, player.y, 5, 5);
 
     ctx.restore();
     requestAnimationFrame(desenha);
     t0 = t;
     ctx.resetTransform();
+    console.log(player.score);
+    console.log(player.cargas);
 }
 
 function desenhaPlanetas() {
@@ -170,7 +313,7 @@ function desenhaPlanetas() {
                             ctx.lineTo(planet.x + 20, planet.y + 10*(numeroElementos-1));
                             ctx.lineTo(planet.x + 17.5, planet.y + 10*(numeroElementos-1) - 4.33);
                             ctx.fill();
-                        break;
+                            break;
                     }
                     numeroElementos +=1;
                 }
