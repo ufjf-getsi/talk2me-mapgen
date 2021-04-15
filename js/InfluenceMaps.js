@@ -17,13 +17,11 @@ export default class InfluenceMaps{
     map.addElement(row, column)
   }
 
-  verifyElement(row, column)
+  verifyElement(key, row, column)
   {
-    for (var value of this.maps.values()) {
-      if (value.values[row][column] == 0)
-      {
-        return true;
-      }
+    if(this.maps.get(key).values[row][column] == 0 || this.maps.get(key+3).values[row][column] == 0) 
+    {
+      return true;
     }
     return false;
   }

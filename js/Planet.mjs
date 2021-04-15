@@ -6,10 +6,10 @@ export default class Planet {
         this.x = this.column*SIZE;
         this.y = this.row*SIZE;
         this.color = "white";
-        this.role = 6;
+        this.lista = new Set();
         /*this.contents = [
             GEM_RED,
             BUYER_GREEN
         ];*/
     }
-};
+}

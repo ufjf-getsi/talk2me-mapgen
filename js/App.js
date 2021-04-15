@@ -37,52 +37,24 @@ function criaGerador(indice)
 {
     gr = Math.floor(Math.random() * SIDE);
     gc = Math.floor(Math.random() * SIDE);
-    while (maps.verifyElement(gr, gc)) {
+    while (maps.verifyElement(indice, gr, gc) || maps.getElement(indice + NumberGem, gr, gc) < 4) {
         gr = Math.floor(Math.random() * SIDE);
         gc = Math.floor(Math.random() * SIDE);
     }
-    switch (indice) {
-        case 0:
-            planets[gr][gc].color = "red";
-            planets[gr][gc].role = 0;
-            break;
-        case 1:
-            planets[gr][gc].color = "blue";
-            planets[gr][gc].role = 1;
-            break;
-        case 2:
-            planets[gr][gc].color = "green";
-            planets[gr][gc].role = 2;
-            break;
-    }
-    
+    planets[gr][gc].lista.add(indice);
     maps.addElement(indice, gr, gc);
 }
 
 //função para criar consumidores a determinada distancia , definindo a color do consumidor 
 function criaConsumidor(indice)
 {
-    
     gr = Math.floor(Math.random() * SIDE);
     gc = Math.floor(Math.random() * SIDE);
-    while (maps.verifyElement(gr, gc) || maps.getElement(indice, gr, gc) < 4) {
+    while (maps.verifyElement(indice, gr, gc) || maps.getElement(indice, gr, gc) < 4) {
         gr = Math.floor(Math.random() * SIDE);
         gc = Math.floor(Math.random() * SIDE);
     }
-    switch (indice) {
-        case 0:
-            planets[gr][gc].color = "Crimson";
-            planets[gr][gc].role = 3;
-            break;
-        case 1:
-            planets[gr][gc].color = "Cyan";
-            planets[gr][gc].role = 4;
-            break;
-        case 2:
-            planets[gr][gc].color = "SpringGreen";
-            planets[gr][gc].role = 5;
-            break;
-    }
+    planets[gr][gc].lista.add(indice + NumberGem);
     maps.addElement(indice + NumberGem, gr, gc);
 }
 
@@ -153,24 +125,55 @@ function desenhaPlanetas() {
             const planet = planets[r][c];
             ctx.fillStyle = planet.color;
             ctx.beginPath();
-            if(planet.role < 3) {
-                ctx.rect(planet.x, planet.y, 8, 8)
-            } else if(planet.role < 6) {
-                ctx.ellipse(planet.x, planet.y, 4, 7, 0, 0, 2 * Math.PI, false);
-            } else {
-                ctx.ellipse(planet.x, planet.y, 7, 7, 0, 0, 2 * Math.PI, false);
-            }
+            ctx.ellipse(planet.x, planet.y, 7, 7, 0, 0, 2 * Math.PI, false);
             
             ctx.fill();
             ctx.strokeStyle = "grey";
             ctx.stroke();
             if(camada == 6){
-                ctx.fillStyle = "red";
-                ctx.fillText(maps.getElement(0, r, c), planet.x + 10, planet.y + 10);
-                ctx.fillStyle = "blue";
-                ctx.fillText(maps.getElement(1, r, c), planet.x + 20, planet.y + 10);
-                ctx.fillStyle = "green";
-                ctx.fillText(maps.getElement(2, r, c), planet.x + 30, planet.y + 10);
+                let numeroElementos = 0;
+                for (let item of planet.lista)
+                {
+                    switch (item) {
+                        case 0:
+                            ctx.fillStyle = "red";
+                            ctx.fillRect(planet.x + 15, planet.y + 10*(numeroElementos-1), 4, 4);            
+                            break;
+                        case 1:
+                            ctx.fillStyle = "blue";
+                            ctx.fillRect(planet.x + 15, planet.y + 10*(numeroElementos-1), 4, 4);
+                            break;
+                        case 2:
+                            ctx.fillStyle = "green";
+                            ctx.fillRect(planet.x + 15, planet.y + 10*(numeroElementos-1), 4, 4);
+                            break;
+                        case 3:
+                            ctx.fillStyle = "red";
+                            ctx.beginPath();
+                            ctx.moveTo(planet.x + 15, planet.y + 10*(numeroElementos-1));
+                            ctx.lineTo(planet.x + 20, planet.y + 10*(numeroElementos-1));
+                            ctx.lineTo(planet.x + 17.5, planet.y + 10*(numeroElementos-1) - 4.33);
+                            ctx.fill();
+                            break;
+                        case 4:
+                            ctx.fillStyle = "blue";
+                            ctx.beginPath();
+                            ctx.moveTo(planet.x + 15, planet.y + 10*(numeroElementos-1));
+                            ctx.lineTo(planet.x + 20, planet.y + 10*(numeroElementos-1));
+                            ctx.lineTo(planet.x + 17.5, planet.y + 10*(numeroElementos-1) - 4.33);
+                            ctx.fill();
+                            break;
+                        case 5:
+                            ctx.fillStyle = "green";
+                            ctx.beginPath();
+                            ctx.moveTo(planet.x + 15, planet.y + 10*(numeroElementos-1));
+                            ctx.lineTo(planet.x + 20, planet.y + 10*(numeroElementos-1));
+                            ctx.lineTo(planet.x + 17.5, planet.y + 10*(numeroElementos-1) - 4.33);
+                            ctx.fill();
+                        break;
+                    }
+                    numeroElementos +=1;
+                }
             }
             else
             {
