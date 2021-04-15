@@ -63,9 +63,9 @@ function comportamentoPlayer()
 {
     let distanciaPlaneta = Infinity;
     let proximoPlaneta = "";
-    if(player.seguindo == NumberGem*2) {
+    if(player.seguindo == NumberGem*2) { // verificar se o jogador está seguindo algum mapa de influencia
         let cargaPrioritaria = NumberGem;
-        for (let index = 0; index < player.cargas.length; index++) {
+        for (let index = 0; index < player.cargas.length; index++) { // verificar se o jogador tem carga e se existe um planeta como consumidor
             if(player.cargas[index] > 0)
             {
                 if(cargaPrioritaria == NumberGem)
@@ -83,11 +83,11 @@ function comportamentoPlayer()
                 }
             }
         }
-        if(cargaPrioritaria < NumberGem && distanciaPlaneta != Infinity)
+        if(cargaPrioritaria < NumberGem && distanciaPlaneta != Infinity) // se tiver carga e planeta para entregar determina o mapa a seguir
         {
             player.seguindo = cargaPrioritaria + NumberGem; 
         } 
-        else 
+        else // caso não tenha carga determina o mapa de influencia do gerador mais próximo
         {
             let mapaSeguido = 0;
             for (let index = 1; index < NumberGem; index++) {
@@ -146,7 +146,7 @@ function comportamentoPlayer()
     }
 }
 
-//função para determinar comportamento do jogador 
+//função para determinar a interação do jogador com os mapas de influencia
 function interagirPlaneta()
 {
     const planet = planets[player.planetX][player.planetY];
@@ -168,7 +168,7 @@ function interagirPlaneta()
     }
 }
 
-//função para determinar comportamento do jogador 
+//função para determinar qual seria o deslocamento do jogador 
 function deslocarPlayer(direcao)
 {
     switch (direcao) {
@@ -251,6 +251,8 @@ function desenhaPlanetas() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    ctx.fillStyle = "white";
+    ctx.fillText("Pontuação: " + player.score, 150, 230);
     if(camada == 6){
         ctx.fillStyle = "white";
         ctx.fillText("Nenhuma camada selecionada", 0, 230);
