@@ -241,8 +241,6 @@ function desenha(t) {
     requestAnimationFrame(desenha);
     t0 = t;
     ctx.resetTransform();
-    console.log(player.score);
-    console.log(player.cargas);
 }
 
 function desenhaPlanetas() {
