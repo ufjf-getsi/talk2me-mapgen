@@ -1,79 +1,68 @@
 import Cena from "./Cena.js";
-import Sprite from "./Sprite.js";
 import Mapa from "./Mapa.js";
-import modeloMapa1 from "../maps/mapa1.js";
-
+import Player from "./Player.js";
 
 export default class CenaJogo extends Cena {
   quandoColidir(a, b) {
-    if (!this.aRemover.includes(a)) {
-      this.aRemover.push(a);
+    if(a.tags.has("pc") && b.tags.has("planet")){
+      for (let item of b.lista)
+      {
+        if (item < this.NumberGem) {
+          a.cargas[item] += 1;
+          this.mapa.maps.atualizaMapa(item, a.planetX, a.planetY);
+          b.lista.delete(item)
+        } else {
+          if(a.cargas[item-3] > 0)
+          {
+            a.score += a.cargas[item-3];
+            a.cargas[item-3] = 0;
+            this.mapa.maps.atualizaMapa(item, a.planetX, a.planetY);
+            b.lista.delete(item)
+          }
+        }
+      }
     }
-    if (!this.aRemover.includes(b)) {
-      this.aRemover.push(b);
-    }
-    if (a.tags.has("pc") && b.tags.has("enemy")) {
-      this.game.selecionaCena("fim");
+    if(a.tags.has("planet") && b.tags.has("pc"))
+    {
+      for (let item of a.lista)
+      {
+        if (item < this.NumberGem) {
+          b.cargas[item] += 1;
+          this.mapa.maps.atualizaMapa(item, b.planetX, b.planetY);
+          a.lista.delete(item)
+        } else {
+          if(b.cargas[item-3] > 0)
+          {
+            b.score += b.cargas[item-3];
+            b.cargas[item-3] = 0;
+            this.mapa.maps.atualizaMapa(item, b.planetX, b.planetY);
+            a.lista.delete(item)
+          }
+        }
+      }
     }
   }
   preparar() {
     super.preparar();
-    const mapa1 = new Mapa(10, 14, 32);
-    mapa1.carregaMapa(modeloMapa1);
+
+    const mapa1 = new Mapa();
+    mapa1.criaGerador(0);
+    mapa1.criaGerador(1);
+    mapa1.criaGerador(2);
+    mapa1.criaGerador(0);
+    mapa1.criaGerador(1);
+    mapa1.criaGerador(2);
+    mapa1.criaConsumidor(0);
+    mapa1.criaConsumidor(1);
+    mapa1.criaConsumidor(2);
     this.configuraMapa(mapa1);
-
-    const pc = new Sprite({ x: 50, y: 150 });
-    pc.tags.add("pc");
-    const cena = this;
-    pc.controlar = function (dt) {
-      if (cena.input.comandos.get("MOVE_ESQUERDA")) {
-        this.vx = -50;
-      } else if (cena.input.comandos.get("MOVE_DIREITA")) {
-        this.vx = +50;
-      } else {
-        this.vx = 0;
+    for (let r = 0; r < this.mapa.planets.length; r++) {
+      for (let c = 0; c < this.mapa.planets[0].length; c++) {
+        this.adicionar(this.mapa.planets[r][c]);
       }
-      if (cena.input.comandos.get("MOVE_CIMA")) {
-        this.vy = -50;
-      } else if (cena.input.comandos.get("MOVE_BAIXO")) {
-        this.vy = +50;
-      } else {
-        this.vy = 0;
-      }
-    };
-    this.adicionar(pc);
-
-    function perseguePC(dt) {
-      this.vx = 25 * Math.sign(pc.x - this.x);
-      this.vy = 25 * Math.sign(pc.y - this.y);
     }
-
-    const en1 = new Sprite({
-      x: 360,
-      color: "red",
-      controlar: perseguePC,
-      tags: ["enemy"],
-    });
-    this.adicionar(en1);
-    this.adicionar(
-      new Sprite({
-        x: 115,
-        y: 70,
-        vy: 10,
-        color: "red",
-        controlar: perseguePC,
-        tags: ["enemy"],
-      })
-    );
-    this.adicionar(
-      new Sprite({
-        x: 115,
-        y: 160,
-        vy: -10,
-        color: "red",
-        controlar: perseguePC,
-        tags: ["enemy"],
-      })
-    );
+    const pc = new Player(this.NumberGem, 3.5, 3.5);
+    pc.tags.add("pc");
+    this.adicionar(pc);
   }
 }

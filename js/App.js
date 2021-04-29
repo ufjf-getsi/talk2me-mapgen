@@ -1,20 +1,64 @@
-import InfluenceMaps from "./InfluenceMaps.js";
-import Planet from "./Planet.mjs";
-import Player from "./Player.js";
+import InputManager from "./InputManager.js";
+import AssetManager from "./AssetManager.js";
+import CenaJogo from "./CenaJogo.js";
+import Game from "./Game.js";
+
+const input = new InputManager();
+const assets = new AssetManager();
 
 let canvas = document.querySelector("canvas");
-let ctx = canvas.getContext("2d");
 canvas.width = 480;
 canvas.height = 320;
-let x = 100;
-let y = 150;
-let vx = 0;
-let vy = 0;
-let xMapa = 0;
-let yMapa = 0;
-let camada = 6;
 
-const NumberGem = 3;
+const game  = new Game(canvas, assets, input);
+const cena0 = new CenaJogo(canvas, assets, 3);
+game.adicionarCena("jogo", cena0);
+game.selecionaCena("jogo");
+game.iniciar();
+
+document.addEventListener("keydown", (e) => {
+    switch (e.key) {
+        case "0":
+            game.cena.camada = 0;
+            break;
+        case "1":
+            game.cena.camada = 1;
+            break;
+        case "2":
+            game.cena.camada = 2;
+            break;
+        case "3":
+            game.cena.camada = 3;
+            break;
+        case "4":
+            game.cena.camada = 4;
+            break;
+        case "5":
+            game.cena.camada = 5;
+            break;
+        case "6":
+            game.cena.camada = 6;
+            break;
+        case "ArrowLeft":
+            e.preventDefault();
+            game.cena.xMapa = game.cena.xMapa - 10;
+            break;
+        case "ArrowRight":
+            e.preventDefault();
+            game.cena.xMapa = game.cena.xMapa + 10;
+            break;
+        case "ArrowUp":
+            e.preventDefault();
+            game.cena.yMapa = game.cena.yMapa - 10;
+            break;
+        case "ArrowDown":
+            e.preventDefault();
+            game.cena.yMapa = game.cena.yMapa + 10;
+            break;
+    }
+});
+
+/*const NumberGem = 3;
 const SIDE = 5;
 const SIZE = 50;
 
@@ -26,7 +70,7 @@ let planets = Array(SIDE)
 
 for (let r = 0; r < planets.length; r++) {
     for (let c = 0; c < planets[0].length; c++) {
-        planets[r][c] = new Planet(r,c);
+        planets[r][c] = new Planet(r,c,SIZE);
     }
 }
 
@@ -226,9 +270,9 @@ function desenha(t) {
         tempoEscolha += dt;
     }
 
-    /*Atualiza estados
+    Atualiza estados
     x = x + 25 * Math.sign(planets[gr][gc].x - x) * dt;
-    y = y + 25 * Math.sign(planets[gr][gc].y - y) * dt;*/
+    y = y + 25 * Math.sign(planets[gr][gc].y - y) * dt;
 
     desenhaPlanetas();
     //Desenha player
@@ -328,45 +372,4 @@ function desenhaPlanetas() {
     }
     
 }
-
-document.addEventListener("keydown", (e) => {
-    switch (e.key) {
-        case "0":
-            camada = 0;
-            break;
-        case "1":
-            camada = 1;
-            break;
-        case "2":
-            camada = 2;
-            break;
-        case "3":
-            camada = 3;
-            break;
-        case "4":
-            camada = 4;
-            break;
-        case "5":
-            camada = 5;
-            break;
-        case "6":
-            camada = 6;
-            break;
-        case "ArrowLeft":
-            e.preventDefault();
-            xMapa = xMapa - 10;
-            break;
-        case "ArrowRight":
-            e.preventDefault();
-            xMapa = xMapa + 10;
-            break;
-        case "ArrowUp":
-            e.preventDefault();
-            yMapa = yMapa - 10;
-            break;
-        case "ArrowDown":
-            e.preventDefault();
-            yMapa = yMapa + 10;
-            break;
-    }
-});
+*/

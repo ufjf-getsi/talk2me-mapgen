@@ -1,26 +1,40 @@
 export default class Cena {
-  constructor(canvas = null, assets = null) {
+  constructor(canvas = null, assets = null, numberGem = 3) {
     this.canvas = canvas;
     this.ctx = canvas?.getContext("2d");
     this.assets = assets;
     this.game = null;
     this.preparar();
+    this.NumberGem = numberGem;
+    this.mapa = null;
+    this.camada = 6;
+    this.xMapa = 0;
+    this.yMapa = 0;
   }
   desenhar() {
-    this.ctx.fillStyle = "lightblue";
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    this.mapa?.desenhar(this.ctx);
+    const SIDE = 5;
+    const SIZE = 50;
+    //Desenha Fundo
+    this.ctx.fillStyle = "black";
+    this.ctx.fillRect(-300, -300, this.canvas.width + 300, this.canvas.height + 300);
+
+    //Desloca origem
+    this.ctx.save();
+    this.ctx.translate(
+        (this.canvas.width - SIDE * SIZE) / 2,
+        (this.canvas.height - SIDE * SIZE) / 2
+    );
+    this.ctx.translate(this.xMapa, this.yMapa);
+    this.mapa?.desenhar(this.ctx, this.camada);
     
     if(this.assets.acabou()){
       for (let s = 0; s < this.sprites.length; s++) {
         const sprite = this.sprites[s];
         sprite.desenhar(this.ctx);
-        sprite.aplicaRestricoes();
       }
     }
-    this.ctx.fillStyle = "yellow";
-    this.ctx.fillText(this.assets?.progresso(), 10, 20);
+    this.ctx.restore();
+    this.ctx.resetTransform();
   }
   adicionar(sprite) {
     sprite.cena = this;
